@@ -21,7 +21,7 @@ This tool solves both problems at once:
 |:--------------:|:----------------:|
 | ![Original](assets/1.png) | ![Processed](assets/1_rmbg.png) |
 
-> The original image has a subtle off-white background. After processing, the background becomes transparent (shown against black to demonstrate transparency).
+> Left: The original image has a subtle grayish background. Right: Clean image with transparent background.
 
 ## 📦 Installation
 
