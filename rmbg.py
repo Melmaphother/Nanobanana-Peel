@@ -167,6 +167,25 @@ def parse_color(color_str: str) -> tuple[int, int, int]:
         raise ValueError(f"Invalid color format '{color_str}': {e}")
 
 
+def generate_default_output_path(input_path: str) -> str:
+    """
+    Generate a default output path by appending '_rmbg' suffix to the input filename.
+
+    Args:
+        input_path: Path to the input image file.
+
+    Returns:
+        Generated output path with '_rmbg' suffix.
+
+    Examples:
+        'image.png' -> 'image_rmbg.png'
+        'path/to/photo.jpg' -> 'path/to/photo_rmbg.png'
+    """
+    input_file = Path(input_path)
+    output_filename = f"{input_file.stem}_rmbg.png"
+    return str(input_file.parent / output_filename)
+
+
 def main() -> None:
     """Main entry point for the script."""
     parser = argparse.ArgumentParser(
@@ -174,6 +193,8 @@ def main() -> None:
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
+  %(prog)s -i input.png
+  %(prog)s -i input1.png input2.png input3.png
   %(prog)s -i input.png -o output.png
   %(prog)s -i input.png -o output.png --transparent 0.05 --opaque 0.5
   %(prog)s -i input.png -o output.png --background 0,0,0
@@ -181,10 +202,19 @@ Examples:
     )
 
     parser.add_argument(
-        "-i", "--input", required=True, help="Path to the input image file"
+        "-i",
+        "--input",
+        required=True,
+        nargs="+",
+        help="Path(s) to the input image file(s). Supports multiple files for batch processing.",
     )
     parser.add_argument(
-        "-o", "--output", required=True, help="Path to save the output image"
+        "-o",
+        "--output",
+        required=False,
+        default=None,
+        help="Path to save the output image. Only valid when processing a single file. "
+        "If not specified, output will be saved as '<input_name>_rmbg.png'.",
     )
     parser.add_argument(
         "--transparent",
@@ -207,15 +237,44 @@ Examples:
 
     args = parser.parse_args()
 
+    # Validate: -o option is only valid for single file input
+    if args.output is not None and len(args.input) > 1:
+        print(
+            "❌ Error: -o/--output option is only valid when processing a single file."
+        )
+        print(
+            "   For batch processing, output filenames are generated automatically as '<input_name>_rmbg.png'."
+        )
+        exit(1)
+
     try:
         background_color = parse_color(args.background)
-        process_image(
-            input_path=args.input,
-            output_path=args.output,
-            transparent_threshold=args.transparent,
-            opaque_threshold=args.opaque,
-            background_color=background_color,
-        )
+
+        # Process each input file
+        for input_path in args.input:
+            # Determine output path
+            if args.output is not None:
+                output_path = args.output
+            else:
+                output_path = generate_default_output_path(input_path)
+
+            try:
+                process_image(
+                    input_path=input_path,
+                    output_path=output_path,
+                    transparent_threshold=args.transparent,
+                    opaque_threshold=args.opaque,
+                    background_color=background_color,
+                )
+            except Exception as e:
+                print(f"❌ Error processing '{input_path}': {e}")
+                # Continue processing other files in batch mode
+                if len(args.input) == 1:
+                    exit(1)
+
+        if len(args.input) > 1:
+            print(f"🎉 Batch processing complete. Processed {len(args.input)} file(s).")
+
     except Exception as e:
         print(f"❌ Error: {e}")
         exit(1)

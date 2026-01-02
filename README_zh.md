@@ -49,35 +49,48 @@ cd Nanobanana-Peel
 ### 基础用法
 
 ```bash
+# 处理单个图片（输出: input_rmbg.png）
+python rmbg.py -i input.png
+
+# 指定输出路径
 python rmbg.py -i input.png -o output.png
+```
+
+### 批量处理
+
+```bash
+# 一次处理多个图片
+python rmbg.py -i image1.png image2.png image3.png
+
+# 输出文件: image1_rmbg.png, image2_rmbg.png, image3_rmbg.png
 ```
 
 ### 自定义阈值
 
 ```bash
 # 更激进的背景去除（更低的阈值）
-python rmbg.py -i input.png -o output.png --transparent 0.05
+python rmbg.py -i input.png --transparent 0.05
 
 # 半透明过渡区域
-python rmbg.py -i input.png -o output.png --transparent 0.05 --opaque 0.3
+python rmbg.py -i input.png --transparent 0.05 --opaque 0.3
 ```
 
 ### 去除非白色背景
 
 ```bash
 # 去除黑色背景
-python rmbg.py -i input.png -o output.png --background 0,0,0
+python rmbg.py -i input.png --background 0,0,0
 
 # 去除自定义颜色背景 (RGB)
-python rmbg.py -i input.png -o output.png --background 128,128,128
+python rmbg.py -i input.png --background 128,128,128
 ```
 
 ## ⚙️ 参数说明
 
 | 参数 | 默认值 | 说明 |
 |-----|-------|------|
-| `-i, --input` | (必需) | 输入图片路径 |
-| `-o, --output` | (必需) | 输出图片路径 |
+| `-i, --input` | (必需) | 输入图片路径，支持多个文件进行批量处理 |
+| `-o, --output` | `<输入文件名>_rmbg.png` | 输出图片路径。仅在处理单个文件时有效。如不指定，输出文件将保存为 `<输入文件名>_rmbg.png` |
 | `--transparent` | `0.1` | 透明阈值 (0-1)。颜色距离低于此值的像素变为完全透明 |
 | `--opaque` | `1.0` | 不透明阈值 (0-1)。颜色距离高于此值的像素保持完全不透明 |
 | `--background` | `255,255,255` | 要检测的背景色，格式为 `R,G,B` |
@@ -120,7 +133,14 @@ source ~/.bashrc
 现在你可以在任何地方使用：
 
 ```bash
+# 单文件处理（自动生成 ai_image_rmbg.png）
+rmbg -i ~/Downloads/ai_image.png
+
+# 指定输出路径
 rmbg -i ~/Downloads/ai_image.png -o ~/Downloads/ai_image_transparent.png
+
+# 批量处理
+rmbg -i ~/Downloads/*.png
 ```
 
 ## 📐 工作原理
@@ -138,11 +158,14 @@ rmbg -i ~/Downloads/ai_image.png -o ~/Downloads/ai_image_transparent.png
 
 ```bash
 # 1. 下载一张 AI 生成的图片
-# 2. 去除背景
-rmbg -i ai_generated.png -o clean.png
+# 2. 去除背景（自动生成 ai_generated_rmbg.png）
+rmbg -i ai_generated.png
 
 # 3. 对于黄色背景更明显的图片，使用更低的阈值
-rmbg -i yellow_bg.png -o clean.png --transparent 0.15
+rmbg -i yellow_bg.png --transparent 0.15
+
+# 4. 批量处理文件夹中的所有图片
+rmbg -i *.png
 ```
 
 ## 📄 许可证

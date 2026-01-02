@@ -49,35 +49,48 @@ cd Nanobanana-Peel
 ### Basic Usage
 
 ```bash
+# Process a single image (output: input_rmbg.png)
+python rmbg.py -i input.png
+
+# Process with custom output path
 python rmbg.py -i input.png -o output.png
+```
+
+### Batch Processing
+
+```bash
+# Process multiple images at once
+python rmbg.py -i image1.png image2.png image3.png
+
+# Output files: image1_rmbg.png, image2_rmbg.png, image3_rmbg.png
 ```
 
 ### With Custom Thresholds
 
 ```bash
 # More aggressive background removal (lower threshold)
-python rmbg.py -i input.png -o output.png --transparent 0.05
+python rmbg.py -i input.png --transparent 0.05
 
 # Semi-transparent transition zone
-python rmbg.py -i input.png -o output.png --transparent 0.05 --opaque 0.3
+python rmbg.py -i input.png --transparent 0.05 --opaque 0.3
 ```
 
 ### Remove Non-White Background
 
 ```bash
 # Remove black background
-python rmbg.py -i input.png -o output.png --background 0,0,0
+python rmbg.py -i input.png --background 0,0,0
 
 # Remove custom color background (RGB)
-python rmbg.py -i input.png -o output.png --background 128,128,128
+python rmbg.py -i input.png --background 128,128,128
 ```
 
 ## ⚙️ Parameters
 
 | Parameter | Default | Description |
 |-----------|---------|-------------|
-| `-i, --input` | (required) | Path to the input image |
-| `-o, --output` | (required) | Path to save the output image |
+| `-i, --input` | (required) | Path(s) to the input image(s). Supports multiple files for batch processing |
+| `-o, --output` | `<input>_rmbg.png` | Path to save the output image. Only valid for single file input. If not specified, output will be saved as `<input_name>_rmbg.png` |
 | `--transparent` | `0.1` | Distance threshold (0-1). Pixels with color distance below this become fully transparent |
 | `--opaque` | `1.0` | Distance threshold (0-1). Pixels with color distance above this remain fully opaque |
 | `--background` | `255,255,255` | Background color to detect as `R,G,B` |
@@ -120,7 +133,14 @@ source ~/.bashrc
 Now you can use it from anywhere:
 
 ```bash
+# Single file (auto-generates ai_image_rmbg.png)
+rmbg -i ~/Downloads/ai_image.png
+
+# With custom output path
 rmbg -i ~/Downloads/ai_image.png -o ~/Downloads/ai_image_transparent.png
+
+# Batch processing
+rmbg -i ~/Downloads/*.png
 ```
 
 ## 📐 How It Works
@@ -138,11 +158,14 @@ rmbg -i ~/Downloads/ai_image.png -o ~/Downloads/ai_image_transparent.png
 
 ```bash
 # 1. Download an AI-generated image
-# 2. Remove the background
-rmbg -i ai_generated.png -o clean.png
+# 2. Remove the background (auto-generates ai_generated_rmbg.png)
+rmbg -i ai_generated.png
 
 # 3. For images with stronger yellow tint, use lower threshold
-rmbg -i yellow_bg.png -o clean.png --transparent 0.15
+rmbg -i yellow_bg.png --transparent 0.15
+
+# 4. Batch process all images in a folder
+rmbg -i *.png
 ```
 
 ## 📄 License
