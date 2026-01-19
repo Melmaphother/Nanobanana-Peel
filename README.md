@@ -1,5 +1,7 @@
 # 🍌 Nanobanana Peel - Remove Background for AI-Generated Images
 
+🌐 **Try it online:** https://melmaphother.github.io/nanobanana-peel/
+
 A lightweight Python tool to remove backgrounds from AI-generated images by adding transparency.
 
 English | [简体中文](README_zh.md)
